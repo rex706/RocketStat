@@ -6,6 +6,7 @@ RockatStat searches for an array of bytes in memory and adjusts accordingly to o
 This program is essentially useless as the game tracks all of this information for you, but was made to prove to myself I could do something like this. 
 
 -LATEST ROCKET LEAGUE UPDATE CHANGED THE AOB TO SEARCH FOR-
+
 -CURRENTLY BROKEN BUT WILL UPDATE ONCE A NEW ONE IS FOUND-
 
 ![alt tag](http://i.imgur.com/t7glHA1.png)
