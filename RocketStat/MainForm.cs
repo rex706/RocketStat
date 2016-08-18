@@ -428,7 +428,7 @@ namespace RocketStat
                         if (answer == DialogResult.Yes)
                         {
                             //TODO: Later on, remove this and replace with automated process of downloading new binaries.
-                            Process.Start("https://github.com/rex706/RocketLauncher");
+                            Process.Start("https://github.com/rex706/RocketStat");
                             //Update is available, and user wants to update. Requires app to close.
                             return 2;
                         }
