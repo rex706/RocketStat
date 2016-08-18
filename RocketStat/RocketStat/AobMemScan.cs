@@ -7,12 +7,12 @@ using System.Runtime.InteropServices;
 
 // [ USAGE ] ------------------------------------------------------------------------------
 //
-// AobScan takes in a string "process name" and the byte array pattern to search for.
+// AobScan takes in a string "process name", a byte array pattern to search for, and a string mask for the byte array.
 //
 // Example:
 //      
 //      string mask = "xxxxxxxx"; // Match the number of bytes in array
-//      byte[] pattern = new byte[]{ 0xFF, 0xFF, 0xFF, 0xFF, 0x51, 0x55, 0xFC, 0x11 };
+//      byte[] pattern = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0x51, 0x55, 0xFC, 0x11 };
 //
 //      string dyn_mask = "xxxx???x"; // x for known, ? for unknown/dynamic
 //      byte[] dyn_pattern = new byte[] { 0x31, 0x55, 0x78, 0x33, 0, 0, 0, 0x37 };
