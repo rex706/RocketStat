@@ -3,10 +3,13 @@ using System.Collections;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace RocketStat
@@ -38,6 +41,8 @@ namespace RocketStat
 
         private static Hashtable HashAddresses;
 
+        private static Version latest;
+
         #endregion
 
         [DllImport("kernel32.dll")]
@@ -50,16 +55,42 @@ namespace RocketStat
             InitializeComponent();
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private async void MainForm_Load(object sender, EventArgs e)
         {
-            ProcessName = "rocketleague";
+            //verion number from assembly
+            string AssemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            int idx = AssemblyVersion.LastIndexOf('0') - 1;
+            AssemblyVersion = AssemblyVersion.Substring(0, idx);
+            VersionLinkLabel.Text = "v" + AssemblyVersion;
 
-            mask = "xx?x????xxxxxxxx????????xxxxxxxx??xxxxxxx???xxxx?xxxxx??xx"; //x for known, ? for unknown
+            //Check for a new version.
+            int updateResult = await CheckForUpdate();
+            if (updateResult == -1)
+            {
+                //Some Error occurred.
+                //TODO: Handle this Error.
+            }
+            else if (updateResult == 1)
+            {
+                //An update is available, but user has chosen not to update.
+                VersionLinkLabel.LinkColor = Color.Red;
+                VersionLinkLabel.Text = "v" + latest + " update available!";
+            }
+            else if (updateResult == 2)
+            {
+                //An update is available, and the user has chosen to update.
+                //TODO: Exit the application. Later, initiate a process that downloads new updated binaries.
+                Close();
+            }
+
+            ProcessName = "rocketleague";
 
             pattern = new byte[] {  0xD0, 0x9E, 0, 0x01, 0, 0, 0, 0, 0x00, 0x00, 0x10, 0x10, 0x01, 0x00, 0x00, 0x02,
                                     0, 0, 0, 0, 0, 0, 0, 0, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF,
                                     0, 0, 0x01, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0, 0, 0, 0xC8, 0xAB, 0x00, 0x00,
-                                    0, 0x00, 0x00, 0x00, 0x80, 0xDE, 0, 0, 0x00, 0x4D }; 
+                                    0, 0x00, 0x00, 0x00, 0x80, 0xDE, 0, 0, 0x00, 0x4D };
+
+            mask = "xx?x????xxxxxxxx????????xxxxxxxx??xxxxxxx???xxxx?xxxxx??xx"; //x for known, ? for unknown
 
             try
             {
@@ -373,7 +404,51 @@ namespace RocketStat
             RefreshForm();
         }
 
-        static void Serialize()
+        //Checks if an update is available. 
+        //-1 for check Error, 0 for no update, 1 for update is available, 2 for perform update.
+        private static async Task<int> CheckForUpdate()
+        {
+            //Nkosi Note: Always use asynchronous versions of network and IO methods.
+
+            //Check for version updates
+            var client = new HttpClient();
+            client.Timeout = new TimeSpan(0, 0, 0, 10);
+            try
+            {
+                //open the text file using a stream reader
+                using (Stream stream = await client.GetStreamAsync("http://textuploader.com/58cim/raw"))
+                {
+                    Version current = Assembly.GetExecutingAssembly().GetName().Version;
+                    StreamReader reader = new StreamReader(stream);
+                    latest = Version.Parse(reader.ReadToEnd());
+
+                    if (latest != current)
+                    {
+                        DialogResult answer = MessageBox.Show("A new version of RocketLauncher is available!\n\nCurrent Version     " + current + "\nLatest Version     " + latest + "\n\nUpdate now?", "RocketLauncher Update", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                        if (answer == DialogResult.Yes)
+                        {
+                            //TODO: Later on, remove this and replace with automated process of downloading new binaries.
+                            Process.Start("https://github.com/rex706/RocketLauncher");
+                            //Update is available, and user wants to update. Requires app to close.
+                            return 2;
+                        }
+
+                        //Update is available, but user chose not to update just yet.
+                        return 1;
+                    }
+                }
+
+                //No update available.
+                return 0;
+            }
+            catch (Exception m)
+            {
+                //MessageBox.Show("Failed to check for update.\n" + m.Message,"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return 0;
+            }
+        }
+
+        private static void Serialize()
         {
             // Create a hashtable of values that will eventually be serialized.
             HashAddresses = new Hashtable();
@@ -404,7 +479,7 @@ namespace RocketStat
             }
         }
 
-        static void Deserialize()
+        private static void Deserialize()
         {
             // Declare the hashtable reference.
             HashAddresses = null;
@@ -433,6 +508,11 @@ namespace RocketStat
             {
                 Console.WriteLine("{0} : {1}.", de.Key, de.Value);
             }
+        }
+
+        private void VersionLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://github.com/rex706/RocketStat");
         }
     }
 }

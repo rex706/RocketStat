@@ -5,10 +5,14 @@ Track your Rocket League stats across all games played while this program is run
 
 Features
 
-* Searches Rocket League's process memory to find the local player's values in a similar way to that of cheat engine or any 32 bit process debugging software.
- - searches for an array of bytes in memory, even if some bytes are unknown or dynamic, and adjusts accordingly to obtain the player's information.
+* Searches Rocket League's process memory for an array of bytes to find the local player's values in a similar way to that of cheat engine or any 32 bit process debugging software.
 * Serializes stats when they are saved so they cannot be edited by the user.
 
+Latest version: 1.0.2
+
+* Updated to work after a game patch removed the previous area that was used entirely. (Working as of 8/18/2016)
+* Support for dynamic array masking.
+* Check for updates on program start up.
 
 This program is essentially useless as the game tracks all of this information for you already, but was made to prove to myself I could do something like this. 
 

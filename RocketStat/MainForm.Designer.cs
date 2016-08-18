@@ -49,6 +49,7 @@
             this.TotalShotsLabel = new System.Windows.Forms.Label();
             this.CurrentGameLabel = new System.Windows.Forms.Label();
             this.TotalStatsLabel = new System.Windows.Forms.Label();
+            this.VersionLinkLabel = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // ShotsOnGoalLabel
@@ -287,12 +288,30 @@
             this.TotalStatsLabel.TabIndex = 22;
             this.TotalStatsLabel.Text = "Total";
             // 
+            // VersionLinkLabel
+            // 
+            this.VersionLinkLabel.AutoSize = true;
+            this.VersionLinkLabel.BackColor = System.Drawing.Color.Transparent;
+            this.VersionLinkLabel.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.VersionLinkLabel.ForeColor = System.Drawing.Color.White;
+            this.VersionLinkLabel.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
+            this.VersionLinkLabel.LinkColor = System.Drawing.Color.White;
+            this.VersionLinkLabel.Location = new System.Drawing.Point(12, 7);
+            this.VersionLinkLabel.Name = "VersionLinkLabel";
+            this.VersionLinkLabel.Size = new System.Drawing.Size(37, 14);
+            this.VersionLinkLabel.TabIndex = 23;
+            this.VersionLinkLabel.TabStop = true;
+            this.VersionLinkLabel.Text = "v#.#.#";
+            this.VersionLinkLabel.VisitedLinkColor = System.Drawing.Color.White;
+            this.VersionLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.VersionLinkLabel_LinkClicked);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::RocketStat.Properties.Resources.RocketStatBackImg3;
             this.ClientSize = new System.Drawing.Size(629, 354);
+            this.Controls.Add(this.VersionLinkLabel);
             this.Controls.Add(this.TotalStatsLabel);
             this.Controls.Add(this.CurrentGameLabel);
             this.Controls.Add(this.TotalShotsLabel);
@@ -346,6 +365,7 @@
         private System.Windows.Forms.Label TotalShotsLabel;
         private System.Windows.Forms.Label CurrentGameLabel;
         private System.Windows.Forms.Label TotalStatsLabel;
+        private System.Windows.Forms.LinkLabel VersionLinkLabel;
     }
 }
 
