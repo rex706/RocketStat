@@ -10,6 +10,8 @@ Features
 
 Latest version: 1.0.2
 
+[Download](https://drive.google.com/file/d/0B2byNRcR0k4vakJ6NGZtMHJzbjQ/view?usp=sharing)
+
 * Updated to work after a game patch removed the previous area that was used entirely. (Working as of 8/18/2016)
 * Support for dynamic array masking.
 * Check for updates on program start up.
