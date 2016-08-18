@@ -54,12 +54,12 @@ namespace RocketStat
 
             // 16 x's
             // xxxxxxxxxxxxxxxx
-            mask = "xxxxxx??xxxxxxxx????????xxxxxxxx??xxxxxxx???xxxxxxxxxx??xx??"; //x for known, ? for unknown
+            mask = "xxxx????xxxxxxxx????????xxxxxxxx??xxxxxxx???xxxx?xxxxx??xx??"; //x for known, ? for unknown
 
-            pattern = new byte[] {  0xD0, 0x9E, 0xBA, 0x01, 0x00, 0x78, 0, 0, 0x00, 0x00, 0x10, 0x10, 0x01, 0x00, 0x00, 0x02,
+            pattern = new byte[] {  0xD0, 0x9E, 0xBA, 0x01, 0, 0, 0, 0, 0x00, 0x00, 0x10, 0x10, 0x01, 0x00, 0x00, 0x02,
                                     0, 0, 0, 0, 0, 0, 0, 0, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF,
                                     0, 0, 0x01, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0, 0, 0, 0xC8, 0xAB, 0x00, 0x00,
-                                    0x01, 0x00, 0x00, 0x00, 0x80, 0xDE, 0, 0, 0x00, 0x4D, 0, 0 }; 
+                                    0, 0x00, 0x00, 0x00, 0x80, 0xDE, 0, 0, 0x00, 0x4D, 0, 0 }; 
 
             try
             {
@@ -191,21 +191,20 @@ namespace RocketStat
             int bytesRead = 0;
 
             //check if memory moved
-            //byte[] ChunkStatusByte = new byte[4];
-            //ReadProcessMemory(RocketProcess.Handle, pAddr, ChunkStatusByte, ChunkStatusByte.Length, bytesRead);
-            //int ChunkStatus = BitConverter.ToInt32(ChunkStatusByte, 0);
+            byte[] ChunkStatusByte = new byte[4];
+            ReadProcessMemory(RocketProcess.Handle, pAddr, ChunkStatusByte, ChunkStatusByte.Length, bytesRead);
 
-            //if (ChunkStatus != 0xD0)
-            //{
-            //    InfoLabel.ForeColor = Color.Orange;
-            //    InfoLabel.Text = "mem realloc detected";
-            //    InfoLabel.Refresh();
+            if (ChunkStatusByte[0] != 0xD0)
+            {
+                InfoLabel.ForeColor = Color.Orange;
+                InfoLabel.Text = "mem realloc detected";
+                InfoLabel.Refresh();
 
-            //    Thread.Sleep(5000);
-            //    ScanMem();
+                Thread.Sleep(5000);
+                ScanMem();
 
-            //    return;
-            //}
+                return;
+            }
 
             //points
             bytesRead = 0;
