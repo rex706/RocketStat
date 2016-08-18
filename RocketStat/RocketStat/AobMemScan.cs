@@ -10,12 +10,15 @@ using System.Runtime.InteropServices;
 // AobScan takes in a string "process name" and the byte array pattern to search for.
 //
 // Example:
-//
+//      
+//      string mask = "xxxxxxxx"; // Match the number of bytes in array
 //      byte[] pattern = new byte[]{ 0xFF, 0xFF, 0xFF, 0xFF, 0x51, 0x55, 0xFC, 0x11 };
-//      byte[] dyn_pattern = new byte[] { 0x31, 0x55, 0x78, 0x33, 0, 0, 0, 0x37 };  // 0 to mask unknown/dynamic bytes
+//
+//      string dyn_mask = "xxxx???x"; // x for known, ? for unknown/dynamic
+//      byte[] dyn_pattern = new byte[] { 0x31, 0x55, 0x78, 0x33, 0, 0, 0, 0x37 };
 //
 //      AobScanner = new AobMemScan();
-//      IntPtr Address = AobScanner.AobScan("process name", pattern);
+//      IntPtr Address = AobScanner.AobScan("process name", pattern, mask);
 //
 //      if (Address != IntPtr.Zero)
 //      {
@@ -47,7 +50,7 @@ namespace RocketStat
         }
         List<MEMORY_BASIC_INFORMATION> MemReg { get; set; }
 
-        public IntPtr AobScan(string ProcessName, byte[] Pattern)
+        public IntPtr AobScan(string ProcessName, byte[] Pattern, string mask)
         {
             Process[] P = Process.GetProcessesByName(ProcessName);
 
@@ -61,7 +64,9 @@ namespace RocketStat
                 byte[] buff = new byte[MemReg[i].RegionSize];
                 ReadProcessMemory(P[0].Handle, MemReg[i].BaseAddress, buff, MemReg[i].RegionSize, 0);
 
-                IntPtr Result = _Scan(buff, Pattern);
+                char[] char_mask = mask.ToCharArray();
+
+                IntPtr Result = _Scan(buff, Pattern, char_mask);
                 if (Result != IntPtr.Zero)
                     return new IntPtr(MemReg[i].BaseAddress.ToInt32() + Result.ToInt32());
             }
@@ -88,10 +93,12 @@ namespace RocketStat
             }
         }
 
-        public IntPtr _Scan(byte[] sIn, byte[] sFor)
+        //sIn = search in, sFor = searh for
+        public IntPtr _Scan(byte[] sIn, byte[] sFor, char[] mask)
         {
-            int[] sBytes = new int[256]; int Pool = 0;
+            int[] sBytes = new int[256];          
             int End = sFor.Length - 1;
+            int Pool = 0;
 
             for (int i = 0; i < 256; i++)
                 sBytes[i] = sFor.Length;
@@ -101,7 +108,7 @@ namespace RocketStat
 
             while (Pool <= sIn.Length - sFor.Length)
             {
-                for (int i = End; sIn[Pool + i] == sFor[i]; i--)
+                for (int i = End; (sIn[Pool + i] == sFor[i]) || (mask[i] == '?'); i--)
                     if (i == 0) return new IntPtr(Pool);
 
                 Pool += sBytes[sIn[Pool + End]];

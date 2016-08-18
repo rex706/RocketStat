@@ -70,7 +70,7 @@ using System.Runtime.InteropServices;
 //              int AddressNum = pAddr.ToInt32();
 //              string AddressHex = string.Format("0x{0:X}", AddressNum);
 //          }
-//      {
+//      }
 //
 // ----------------------------------------------------------------------------------------
 

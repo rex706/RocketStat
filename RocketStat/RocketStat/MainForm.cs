@@ -54,12 +54,13 @@ namespace RocketStat
 
             // 16 x's
             // xxxxxxxxxxxxxxxx
-            mask = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; //sigScan mask (must be as long as pattern byte array)
-            pattern = new byte[] {  0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x7C, 0x0B, 0x00, 0x00,
-                                    0x01, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x3C, 0x00, 0x00, 0x00, 0x7D, 0x0B, 0x00, 0x00,
-                                    0x02, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x3D, 0x00, 0x00, 0x00, 0x83, 0x0B, 0x00, 0x00,
-                                    0x03, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }; //FF chunk (local player 1)
-           
+            mask = "xxxxxx??xxxxxxxx????????xxxxxxxx??xxxxxxx???xxxxxxxxxx??xx??"; //x for known, ? for unknown
+
+            pattern = new byte[] {  0xD0, 0x9E, 0xBA, 0x01, 0x00, 0x78, 0, 0, 0x00, 0x00, 0x10, 0x10, 0x01, 0x00, 0x00, 0x02,
+                                    0, 0, 0, 0, 0, 0, 0, 0, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF,
+                                    0, 0, 0x01, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0, 0, 0, 0xC8, 0xAB, 0x00, 0x00,
+                                    0x01, 0x00, 0x00, 0x00, 0x80, 0xDE, 0, 0, 0x00, 0x4D, 0, 0 }; 
+
             try
             {
                 RocketProcess = Process.GetProcessesByName(ProcessName)[0];
@@ -137,30 +138,9 @@ namespace RocketStat
                 InfoLabel.Refresh();
             }
 
-            #region AobScan
-
+            // Scan for byte array
             AobMemScan AobScanner = new AobMemScan();
-            pAddr = AobScanner.AobScan(ProcessName, pattern);
-
-            #endregion
-
-            #region SigScan
-
-            //CURRENTLY NOT WORKING - MEMORY LEAK?
-
-            //ProcessModuleCollection myProcessModuleCollection = RocketProcess.Modules;
-
-            //for (int i = 0; i < myProcessModuleCollection.Count; i++)
-            //{
-            //    SigScan _sigScan = new SigScan();
-            //    _sigScan.Process = RocketProcess;
-            //    _sigScan.Address = myProcessModuleCollection[i].BaseAddress;
-            //    _sigScan.Size = myProcessModuleCollection[i].ModuleMemorySize;
-
-            //    pAddr = _sigScan.FindPattern(pattern, mask, 0);
-            //}
-
-            #endregion
+            pAddr = AobScanner.AobScan(ProcessName, pattern, mask);
 
             //if something was found
             if (pAddr != IntPtr.Zero)
@@ -211,25 +191,25 @@ namespace RocketStat
             int bytesRead = 0;
 
             //check if memory moved
-            byte[] ChunkStatusByte = new byte[4];
-            ReadProcessMemory(RocketProcess.Handle, pAddr, ChunkStatusByte, ChunkStatusByte.Length, bytesRead);
-            int ChunkStatus = BitConverter.ToInt32(ChunkStatusByte, 0);
+            //byte[] ChunkStatusByte = new byte[4];
+            //ReadProcessMemory(RocketProcess.Handle, pAddr, ChunkStatusByte, ChunkStatusByte.Length, bytesRead);
+            //int ChunkStatus = BitConverter.ToInt32(ChunkStatusByte, 0);
 
-            if (ChunkStatus != 0)
-            {
-                InfoLabel.ForeColor = Color.Orange;
-                InfoLabel.Text = "mem realloc detected";
-                InfoLabel.Refresh();
+            //if (ChunkStatus != 0xD0)
+            //{
+            //    InfoLabel.ForeColor = Color.Orange;
+            //    InfoLabel.Text = "mem realloc detected";
+            //    InfoLabel.Refresh();
 
-                Thread.Sleep(5000);
-                ScanMem();
+            //    Thread.Sleep(5000);
+            //    ScanMem();
 
-                return;
-            }
+            //    return;
+            //}
 
             //points
             bytesRead = 0;
-            int PointsAddress = AddressNum + 752;
+            int PointsAddress = AddressNum + 756;
             IntPtr PointsAddressPtr = new IntPtr(PointsAddress);
             byte[] points = new byte[4];
             ReadProcessMemory(RocketProcess.Handle, PointsAddressPtr, points, points.Length, bytesRead);
@@ -253,7 +233,7 @@ namespace RocketStat
 
             //goals
             bytesRead = 0;
-            int GoalsAddress = AddressNum + 756;
+            int GoalsAddress = AddressNum + 760;
             IntPtr GoalsAddressPtr = new IntPtr(GoalsAddress);
             byte[] goals = new byte[4];
             ReadProcessMemory(RocketProcess.Handle, GoalsAddressPtr, goals, goals.Length, bytesRead);
@@ -277,7 +257,7 @@ namespace RocketStat
 
             //assists
             bytesRead = 0;
-            int AssistsAddress = AddressNum + 764;
+            int AssistsAddress = AddressNum + 768;
             IntPtr AssistsAddressPtr = new IntPtr(AssistsAddress);
             byte[] assists = new byte[4];
             ReadProcessMemory(RocketProcess.Handle, AssistsAddressPtr, assists, assists.Length, bytesRead);
@@ -301,7 +281,7 @@ namespace RocketStat
 
             //saves
             bytesRead = 0;
-            int SavesAddress = AddressNum + 768;
+            int SavesAddress = AddressNum + 772;
             IntPtr SavesAddressPtr = new IntPtr(SavesAddress);
             byte[] saves = new byte[4];
             ReadProcessMemory(RocketProcess.Handle, SavesAddressPtr, saves, saves.Length, bytesRead);
@@ -325,7 +305,7 @@ namespace RocketStat
 
             //shots
             bytesRead = 0;
-            int ShotsOnGoalAddress = AddressNum + 772;
+            int ShotsOnGoalAddress = AddressNum + 776;
             IntPtr ShotsOnGoalAddressPtr = new IntPtr(ShotsOnGoalAddress);
             byte[] shotsOnGoal = new byte[4];
             ReadProcessMemory(RocketProcess.Handle, ShotsOnGoalAddressPtr, shotsOnGoal, shotsOnGoal.Length, bytesRead);
