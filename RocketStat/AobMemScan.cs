@@ -7,7 +7,8 @@ using System.Runtime.InteropServices;
 
 // [ USAGE ] ------------------------------------------------------------------------------
 //
-// AobScan takes in a string "process name", a byte array pattern to search for, and a string mask for the byte array.
+// AobScan takes in a string "process name", a byte array pattern to search for, and a string mask for the byte array that is equal to its length.
+// Fill mask with "x" for known bytes and "?" for unkown.
 //
 // Example:
 //      
@@ -20,6 +21,7 @@ using System.Runtime.InteropServices;
 //      AobScanner = new AobMemScan();
 //      IntPtr Address = AobScanner.AobScan("process name", pattern, mask);
 //
+//      // Get address of the start of found array
 //      if (Address != IntPtr.Zero)
 //      {
 //          int AddressNum = pAddr.ToInt32();
@@ -93,25 +95,24 @@ namespace RocketStat
             }
         }
 
-        //sIn = search in, sFor = searh for
-        public IntPtr _Scan(byte[] sIn, byte[] sFor, char[] mask)
+        public IntPtr _Scan(byte[] searchIn, byte[] searchFor, char[] mask)
         {
             int[] sBytes = new int[256];          
-            int End = sFor.Length - 1;
+            int End = searchFor.Length - 1;
             int Pool = 0;
 
             for (int i = 0; i < 256; i++)
-                sBytes[i] = sFor.Length;
+                sBytes[i] = searchFor.Length;
 
             for (int i = 0; i < End; i++)
-                sBytes[sFor[i]] = End - i;
+                sBytes[searchFor[i]] = End - i;
 
-            while (Pool <= sIn.Length - sFor.Length)
+            while (Pool <= searchIn.Length - searchFor.Length)
             {
-                for (int i = End; (sIn[Pool + i] == sFor[i]) || (mask[i] == '?'); i--)
+                for (int i = End; (searchIn[Pool + i] == searchFor[i]) || (mask[i] == '?'); i--)
                     if (i == 0) return new IntPtr(Pool);
 
-                Pool += sBytes[sIn[Pool + End]];
+                Pool += sBytes[searchIn[Pool + End]];
             }
             return IntPtr.Zero;
         }
