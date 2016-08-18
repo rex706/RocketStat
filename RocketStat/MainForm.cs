@@ -25,7 +25,7 @@ namespace RocketStat
         private string AddressHex;
 
         private IntPtr pAddr;
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer RefreshTimer;
 
         private int RetryCounter = 0;
         private bool FirstScanComplete = false;
@@ -52,14 +52,12 @@ namespace RocketStat
         {
             ProcessName = "rocketleague";
 
-            // 16 x's
-            // xxxxxxxxxxxxxxxx
-            mask = "xxxx????xxxxxxxx????????xxxxxxxx??xxxxxxx???xxxx?xxxxx??xx??"; //x for known, ? for unknown
+            mask = "xxxx????xxxxxxxx????????xxxxxxxx??xxxxxxx???xxxx?xxxxx??xx"; //x for known, ? for unknown
 
             pattern = new byte[] {  0xD0, 0x9E, 0xBA, 0x01, 0, 0, 0, 0, 0x00, 0x00, 0x10, 0x10, 0x01, 0x00, 0x00, 0x02,
                                     0, 0, 0, 0, 0, 0, 0, 0, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF,
                                     0, 0, 0x01, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0, 0, 0, 0xC8, 0xAB, 0x00, 0x00,
-                                    0, 0x00, 0x00, 0x00, 0x80, 0xDE, 0, 0, 0x00, 0x4D, 0, 0 }; 
+                                    0, 0x00, 0x00, 0x00, 0x80, 0xDE, 0, 0, 0x00, 0x4D }; 
 
             try
             {
@@ -362,13 +360,13 @@ namespace RocketStat
 
         public void InitTimer()
         {
-            timer1 = new System.Windows.Forms.Timer();
-            timer1.Tick += new EventHandler(timer1_Tick);
-            timer1.Interval = 1000; //in miliseconds
-            timer1.Start();
+            RefreshTimer = new System.Windows.Forms.Timer();
+            RefreshTimer.Tick += new EventHandler(RefreshTimer_Tick);
+            RefreshTimer.Interval = 1000; //in miliseconds
+            RefreshTimer.Start();
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void RefreshTimer_Tick(object sender, EventArgs e)
         {
             RefreshForm();
         }
@@ -383,8 +381,7 @@ namespace RocketStat
             HashAddresses.Add("Saves", TotalSaves);
             HashAddresses.Add("Shots", TotalShots);
 
-            // To serialize the hashtable and its key/value pairs,  
-            // you must first open a stream for writing. 
+            // To serialize the hashtable and its key/value pairs, you must first open a stream for writing. 
             // In this case, use a file stream.
             FileStream fs = new FileStream("info.dat", FileMode.Create);
 
@@ -416,8 +413,7 @@ namespace RocketStat
             {
                 BinaryFormatter formatter = new BinaryFormatter();
 
-                // Deserialize the hashtable from the file and 
-                // assign the reference to the local variable.
+                // Deserialize the hashtable from the file and assign the reference to the local variable.
                 HashAddresses = (Hashtable)formatter.Deserialize(fs);
             }
             catch (SerializationException e)
@@ -430,8 +426,7 @@ namespace RocketStat
                 fs.Close();
             }
 
-            // To prove that the table deserialized correctly, 
-            // display the key/value pairs.
+            // To prove that the table deserialized correctly, display the key/value pairs.
             foreach (DictionaryEntry de in HashAddresses)
             {
                 Console.WriteLine("{0} : {1}.", de.Key, de.Value);

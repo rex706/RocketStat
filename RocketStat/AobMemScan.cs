@@ -10,9 +10,11 @@ using System.Runtime.InteropServices;
 // AobScan takes in a string "process name", a byte array pattern to search for, and a string mask for the byte array that is equal to its length.
 // Fill mask with "x" for known bytes and "?" for unkown.
 //
+// * Remember to change namespace to current project. *
+// 
 // Example:
 //      
-//      string mask = "xxxxxxxx"; // Match the number of bytes in array
+//      string mask = "xxxxxxxx"; // match the number of characters to the number bytes in the array
 //      byte[] pattern = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0x51, 0x55, 0xFC, 0x11 };
 //
 //      string dyn_mask = "xxxx???x"; // x for known, ? for unknown/dynamic
