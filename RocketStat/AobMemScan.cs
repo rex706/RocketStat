@@ -111,7 +111,7 @@ namespace RocketStat
 
             while (Pool <= searchIn.Length - searchFor.Length)
             {
-                for (int i = End; (searchIn[Pool + i] == searchFor[i]) || (mask[i] == '?'); i--)
+                for (int i = End; searchIn[Pool + i] == searchFor[i] || mask[i] == '?'; i--)
                     if (i == 0) return new IntPtr(Pool);
 
                 Pool += sBytes[searchIn[Pool + End]];
