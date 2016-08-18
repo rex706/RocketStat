@@ -14,16 +14,16 @@ using System.Runtime.InteropServices;
 // 
 // Example:
 //      
-//      string mask = "xxxxxxxx"; // match the number of characters to the number bytes in the array
 //      byte[] pattern = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0x51, 0x55, 0xFC, 0x11 };
+//      string mask = "xxxxxxxx"; // match the number of characters to the number bytes in the array
 //
-//      string dyn_mask = "xxxx???x"; // x for known, ? for unknown/dynamic
 //      byte[] dyn_pattern = new byte[] { 0x31, 0x55, 0x78, 0x33, 0, 0, 0, 0x37 };
+//      string dyn_mask = "xxxx???x"; // x for known, ? for unknown/dynamic
 //
 //      AobScanner = new AobMemScan();
 //      IntPtr Address = AobScanner.AobScan("process name", pattern, mask);
 //
-//      // Get address of the start of found array
+//      // Format address
 //      if (Address != IntPtr.Zero)
 //      {
 //          int AddressNum = pAddr.ToInt32();

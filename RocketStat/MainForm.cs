@@ -42,7 +42,9 @@ namespace RocketStat
 
         [DllImport("kernel32.dll")]
         public static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] buffer, int size, int lpNumberOfBytesRead);
-        
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int size, int lpNumberOfBytesWritten);
+
         public MainForm()
         {
             InitializeComponent();
@@ -52,9 +54,9 @@ namespace RocketStat
         {
             ProcessName = "rocketleague";
 
-            mask = "xxxx????xxxxxxxx????????xxxxxxxx??xxxxxxx???xxxx?xxxxx??xx"; //x for known, ? for unknown
+            mask = "xx?x????xxxxxxxx????????xxxxxxxx??xxxxxxx???xxxx?xxxxx??xx"; //x for known, ? for unknown
 
-            pattern = new byte[] {  0xD0, 0x9E, 0xBA, 0x01, 0, 0, 0, 0, 0x00, 0x00, 0x10, 0x10, 0x01, 0x00, 0x00, 0x02,
+            pattern = new byte[] {  0xD0, 0x9E, 0, 0x01, 0, 0, 0, 0, 0x00, 0x00, 0x10, 0x10, 0x01, 0x00, 0x00, 0x02,
                                     0, 0, 0, 0, 0, 0, 0, 0, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF,
                                     0, 0, 0x01, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0, 0, 0, 0xC8, 0xAB, 0x00, 0x00,
                                     0, 0x00, 0x00, 0x00, 0x80, 0xDE, 0, 0, 0x00, 0x4D }; 
@@ -86,7 +88,7 @@ namespace RocketStat
                 }
             }
 
-            //deserialize and get info if file exists
+            // Deserialize and get info if file exists
             if (File.Exists("info.dat"))
             {
                 Deserialize();
@@ -136,11 +138,11 @@ namespace RocketStat
                 InfoLabel.Refresh();
             }
 
-            // Scan for byte array
+            // Scan for array of bytes
             AobMemScan AobScanner = new AobMemScan();
             pAddr = AobScanner.AobScan(ProcessName, pattern, mask);
 
-            //if something was found
+            // If something was found
             if (pAddr != IntPtr.Zero)
             {
                 AddressNum = pAddr.ToInt32();
@@ -158,7 +160,7 @@ namespace RocketStat
                 }
             }
 
-            //if not found, try again
+            // If not found, try again
             if (RetryCounter == 0)
             {
                 RetryCounter++;
@@ -170,7 +172,7 @@ namespace RocketStat
                 ScanMem();
             }
 
-            //not found after second retry
+            // Not found after second retry
             RetryCounter = 0;
 
             NumPointsLabel.Text = "0";
@@ -188,7 +190,7 @@ namespace RocketStat
             int temp = 0;
             int bytesRead = 0;
 
-            //check if memory moved
+            // Check if memory moved
             byte[] ChunkStatusByte = new byte[4];
             ReadProcessMemory(RocketProcess.Handle, pAddr, ChunkStatusByte, ChunkStatusByte.Length, bytesRead);
 
@@ -204,7 +206,7 @@ namespace RocketStat
                 return;
             }
 
-            //points
+            // Points
             bytesRead = 0;
             int PointsAddress = AddressNum + 756;
             IntPtr PointsAddressPtr = new IntPtr(PointsAddress);
@@ -228,7 +230,7 @@ namespace RocketStat
                 TotalPointsLabel.Text = TotalPoints.ToString();
             }
 
-            //goals
+            // Goals
             bytesRead = 0;
             int GoalsAddress = AddressNum + 760;
             IntPtr GoalsAddressPtr = new IntPtr(GoalsAddress);
@@ -252,7 +254,7 @@ namespace RocketStat
                 TotalGoalsLabel.Text = TotalGoals.ToString();
             }
 
-            //assists
+            // Assists
             bytesRead = 0;
             int AssistsAddress = AddressNum + 768;
             IntPtr AssistsAddressPtr = new IntPtr(AssistsAddress);
@@ -276,7 +278,7 @@ namespace RocketStat
                 TotalAssistsLabel.Text = TotalAssists.ToString();
             }
 
-            //saves
+            // Saves
             bytesRead = 0;
             int SavesAddress = AddressNum + 772;
             IntPtr SavesAddressPtr = new IntPtr(SavesAddress);
@@ -300,7 +302,7 @@ namespace RocketStat
                 TotalSavesLabel.Text = TotalSaves.ToString();
             }
 
-            //shots
+            // Shots
             bytesRead = 0;
             int ShotsOnGoalAddress = AddressNum + 776;
             IntPtr ShotsOnGoalAddressPtr = new IntPtr(ShotsOnGoalAddress);
@@ -324,7 +326,7 @@ namespace RocketStat
                 TotalShotsLabel.Text = TotalShots.ToString();
             }
 
-            //boost
+            // Boost
             //bytesRead = 0;
             //int BoostAddress = AddressNum + 352;
             //IntPtr BoostAddressPtr = new IntPtr(BoostAddress);
@@ -341,7 +343,7 @@ namespace RocketStat
 
             //BoostAmountLabel.Text = BoostAmount.ToString();
 
-            //serialize info to file
+            // Serialize info to file
             Serialize();
 
             if (FirstScanComplete == false)
