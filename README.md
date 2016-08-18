@@ -16,7 +16,7 @@ Latest version: 1.0.2
 * Support for dynamic array masking.
 * Check for updates on program start up.
 
-This program is essentially useless as the game tracks all of this information for you already, but was made to prove to myself I could do something like this. 
+This program is essentially useless as the game tracks all of this information for you already, but was made to demonstrate the AobMemScan class and to prove to myself I could do something like this. 
 
 
 TODO:
