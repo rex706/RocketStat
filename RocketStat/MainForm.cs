@@ -424,7 +424,7 @@ namespace RocketStat
 
                     if (latest != current)
                     {
-                        DialogResult answer = MessageBox.Show("A new version of RocketLauncher is available!\n\nCurrent Version     " + current + "\nLatest Version     " + latest + "\n\nUpdate now?", "RocketLauncher Update", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                        DialogResult answer = MessageBox.Show("A new version of RocketStat is available!\n\nCurrent Version     " + current + "\nLatest Version     " + latest + "\n\nUpdate now?", "RocketStat Update", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                         if (answer == DialogResult.Yes)
                         {
                             //TODO: Later on, remove this and replace with automated process of downloading new binaries.
